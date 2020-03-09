@@ -1,0 +1,7 @@
+[global]
+port = 8001
+address = "127.0.0.1"
+
+[global.databases]
+boxpacker_db = { url = "postgres://mthorning:boxpacker@localhost/boxpacker" }
+
