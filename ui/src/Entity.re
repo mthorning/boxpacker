@@ -41,11 +41,15 @@ module Styles = {
 let make =
     (~edit, ~selected, ~onEdit as onSubmit, ~name, ~id, ~displayOnEntityClick) => {
   <div className={Styles.container(selected)}>
-    {edit
-       ? <InputBox onSubmit={onSubmit(id)} />
-       : <div className=Styles.entity>
-           name->s
-           {selected ? displayOnEntityClick(id) : React.null}
-         </div>}
-  </div>;
+    /*
+     {edit
+        ? <InputBox onSubmit={onSubmit(id)} />
+        :
+        */
+
+      <div className=Styles.entity>
+        name->s
+        {selected ? displayOnEntityClick(id) : React.null}
+      </div>
+    </div>;
 };

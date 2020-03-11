@@ -1,87 +1,58 @@
 open AppState;
 open Utils;
 
-type delete =
-  | Delete(uuid, string)
-  | NoDelete;
+module Styles = {
+  open Css;
 
-let nameIsUnique = (entities, name) =>
-  !
-    entities->Belt.List.some(entity => {
-      switch (entity.eType) {
-      | Item(_) => false
-      | Box => entity.name === name
-      }
-    });
+  let container =
+    style([
+      5->px->borderRadius,
+      300->px->width,
+      5->px->padding,
+      1->px->border(solid, black),
+    ]);
 
-let itemCount = (entities, id) =>
-  entities
-  ->Belt.List.keep(entity => {
-      switch (entity.eType) {
-      | Box => false
-      | Item(box) => box === id
-      }
-    })
-  ->Belt.List.length;
+  let inputContainer = style([10->px->padding]);
 
-let deleteMessage = itemCount => {
-  let plural = itemCount !== 1 ? " items" : " item";
+  let ul = style([0->px->padding]);
 
-  "Are you sure you want to deleted this box and its "
-  ++ itemCount->string_of_int
-  ++ plural
-  ++ "?";
+  let li = style([cursor(`pointer), listStyleType(none)]);
 };
+
+type delete =
+  | Delete(id, string)
+  | NoDelete;
 
 [@react.component]
 let make = (~state, ~dispatch) => {
   React.useEffect0(() => {
-    Js.Promise.(
-      ignore(
-        Axios.get("/api/containers")
-        |> then_(resp => resolve(dispatch(LoadBoxes(resp##data))))
-        |> catch(error => resolve(Js.log(error))),
-      )
-    );
+    Container.fetch_all(containers => dispatch(LoadContainers(containers)));
     None;
   });
 
-  let clickHandler = selection => dispatch(ToggleBoxSelection(selection));
+  let onClick = selection => dispatch(ToggleContainerSelection(selection));
+
+  let clickHandler = id => Utils.DoubleClick.handler(onClick, id);
 
   let (showDelete, setShowDelete) = React.useState(_ => NoDelete);
 
   let onDeleteClick = (id, event) => {
     ReactEvent.Mouse.stopPropagation(event);
-    let itemCount = itemCount(state.entities, id);
-    switch (itemCount) {
-    | 0 => dispatch(DeleteBox(id))
-    | _ => setShowDelete(_ => Delete(id, deleteMessage(itemCount)))
-    };
   };
 
   let onConfirmDeletion = (id, _) => {
-    dispatch(DeleteBox(id));
+    dispatch(DeleteContainer(id));
   };
 
-  let onSubmit = (name, resetInput) =>
-    if (state.entities->nameIsUnique(name)) {
-      dispatch(AddBox(name));
-      resetInput();
-    };
-
-  let onEdit = (id, name, resetInput) => {
-    dispatch(EditBoxName(id, name));
+  let onSubmit = (name, resetInput) => {
+    dispatch(AddContainer(name));
     resetInput();
   };
 
-  let boxes =
-    state.entities
-    ->Belt.List.keep(entity => {
-        switch (entity.eType) {
-        | Box => true
-        | Item(_) => false
-        }
-      });
+  let onEdit = (id, name, resetInput) => {
+    dispatch(EditContainerName(id, name));
+    resetInput();
+  };
 
   <>
     {switch (showDelete) {
@@ -93,13 +64,34 @@ let make = (~state, ~dispatch) => {
        />
      | NoDelete => React.null
      }}
-    <EntityList
-      onEdit
-      onSubmit
-      clickHandler
-      entities=boxes
-      displayOnEntityClick={id => <DeleteIcon onClick={onDeleteClick(id)} />}
-      selectedEntity={state.selectedBox}
-    />
+    <div className=Styles.container>
+      <div className=Styles.inputContainer> <InputBox onSubmit /> </div>
+      <ul className=Styles.ul>
+        {state.containers
+         ->mapElementArray(container => {
+             let (selected, edit) =
+               switch (state.selectedContainer) {
+               | Selected(id) => (id === container.id, false)
+               | Editing(id) => (false, id === container.id)
+               | _ => (false, false)
+               };
+             <li
+               onClick={_ => clickHandler(container.id)}
+               key={string_of_int(container.id)}
+               className=Styles.li>
+               <Entity
+                 name={container.name}
+                 id={container.id}
+                 onEdit
+                 displayOnEntityClick={id =>
+                   <DeleteIcon onClick={onDeleteClick(id)} />
+                 }
+                 edit
+                 selected
+               />
+             </li>;
+           })}
+      </ul>
+    </div>
   </>;
 };

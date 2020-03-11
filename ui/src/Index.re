@@ -1,11 +1,7 @@
 open AppState;
 open Utils;
 
-let initialState: state = {
-  entities: [],
-  selectedBox: Nothing,
-  selectedItem: Nothing,
-};
+let initialState: state = {containers: [||], selectedContainer: Nothing};
 
 module Styles = {
   open Css;
@@ -25,11 +21,10 @@ module App = {
   [@react.component]
   let make = _ => {
     let (state, dispatch) = React.useReducer(reducer, initialState);
-    <div className=Styles.container>
-       <Boxes state dispatch /> </div>;
-      /*
-       <Items state dispatch />
-       */
+    <div className=Styles.container> <Boxes state dispatch /> </div>;
+    /*
+     <Items state dispatch />
+     */
   };
 };
 

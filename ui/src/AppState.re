@@ -1,39 +1,26 @@
-type uuid = string;
+open Container;
 
-type eType =
-  | Box
-  | Item(uuid);
-
-type entity = {
-  eType,
-  id: uuid,
-  name: string,
-};
+type id = int;
 
 type selection =
   | Nothing
-  | Selected(uuid)
-  | Editing(uuid);
+  | Selected(id)
+  | Editing(id);
 
 type state = {
-  containers: list(container),
-  entities: list(entity),
-  selectedBox: selection,
-  selectedItem: selection,
+  containers: array(Container.t),
+  selectedContainer: selection,
 };
 
 type action =
-  | LoadContainers(Js.Json.t)
-  | AddBox(string)
-  | ToggleBoxSelection(selection)
-  | EditBoxName(uuid, string)
-  | DeleteBox(uuid)
-  | ToggleItemSelection(selection)
-  | AddItem(string)
-  | EditItemName(uuid, string)
-  | DeleteItem(uuid);
+  | LoadContainers(array(Container.t))
+  | AddContainer(string)
+  | ToggleContainerSelection(selection)
+  | EditContainerName(id, string)
+  | DeleteContainer(id);
 
-let toggleSelection = (selectedEntity, selection) => {
+let toggleSelection =
+    (selectedEntity: selection, selection: selection): selection => {
   switch (selectedEntity, selection) {
   | (Editing(selectedId), Editing(clickedId))
   | (Selected(selectedId), Selected(clickedId)) =>
@@ -42,66 +29,16 @@ let toggleSelection = (selectedEntity, selection) => {
   };
 };
 
-let editName = (entities, id, name) =>
-  entities->Belt.List.map(entity => {
-    entity.id === id ? {...entity, name} : entity
-  });
-
 let reducer = (state, action) => {
   switch (action) {
-  | LoadContainers(json) =>
-    Json.Decode.{data: json |> field("data", list(container))}
-  | AddBox(name) => {
+  | LoadContainers(containers) => {...state, containers}
+  | AddContainer(name) => state
+  | ToggleContainerSelection(selection) => {
       ...state,
-      entities: [
-        {id: Utils.uuid(name), name, eType: Box},
-        ...state.entities,
-      ],
+      selectedContainer: toggleSelection(state.selectedContainer, selection),
     }
-  | ToggleBoxSelection(selection) => {
-      ...state,
-      selectedBox: toggleSelection(state.selectedBox, selection),
-    }
-  | EditBoxName(id, name) => {
-      ...state,
-      entities: editName(state.entities, id, name),
-      selectedBox: Selected(id),
-    }
-  | DeleteBox(id) => {
-      ...state,
-      entities:
-        state.entities
-        ->Belt.List.keep(entity => {
-            switch (entity.eType) {
-            | Box => entity.id !== id
-            | Item(box) => box !== id
-            }
-          }),
-    }
-  | AddItem(name) =>
-    switch (state.selectedBox) {
-    | Selected(box)
-    | Editing(box) => {
-        ...state,
-        entities: [
-          {id: Utils.uuid(name), name, eType: Item(box)},
-          ...state.entities,
-        ],
-      }
-    | Nothing => state
-    }
-  | ToggleItemSelection(selection) => {
-      ...state,
-      selectedItem: toggleSelection(state.selectedItem, selection),
-    }
-  | EditItemName(id, name) => {
-      ...state,
-      entities: editName(state.entities, id, name),
-      selectedItem: Selected(id),
-    }
-  | DeleteItem(id) => {
-      ...state,
-      entities: state.entities->Belt.List.keep(entity => entity.id !== id),
-    }
+  | EditContainerName(id, name) => state
+
+  | DeleteContainer(id) => state
   };
 };

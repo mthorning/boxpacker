@@ -12,7 +12,7 @@ fn check_err<T: Serialize>(
     message: &str,
 ) -> Result<JsonValue, NotFound<JsonValue>> {
     match db_result {
-        Ok(result) => Ok(json!({ "data": result })),
+        Ok(result) => Ok(json!(result)),
         Err(error) => Err(NotFound(json!({
           "message": message,
           "error": error.to_string()
