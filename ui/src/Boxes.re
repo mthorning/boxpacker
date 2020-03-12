@@ -25,10 +25,11 @@ type delete =
 
 [@react.component]
 let make = (~state, ~dispatch) => {
-  React.useEffect0(() => {
-    Container.fetch_all(containers => dispatch(LoadContainers(containers)));
-    None;
-  });
+  let (data, setData) =
+    XHR.useApiData(
+      ~endpoint=Container.endpoint,
+      ~decoder=Container.array_decoder,
+    );
 
   let onClick = selection => dispatch(ToggleContainerSelection(selection));
 
@@ -45,8 +46,15 @@ let make = (~state, ~dispatch) => {
   };
 
   let onSubmit = (name, resetInput) => {
-    dispatch(AddContainer(name));
+    let newContainer = Js.Dict.empty();
+    Js.Dict.set(newContainer, "name", Js.Json.string(name));
+    XHR.postData(
+      ~endpoint=Container.endpoint,
+      ~data=Js.Json.stringify(Js.Json.object_(newContainer)),
+      ~decoder=Container.decoder,
+    );
     resetInput();
+    ();
   };
 
   let onEdit = (id, name, resetInput) => {
@@ -54,21 +62,24 @@ let make = (~state, ~dispatch) => {
     resetInput();
   };
 
-  <>
-    {switch (showDelete) {
-     | Delete(id, message) =>
-       <DeleteBoxModal
-         closeModal={_ => setShowDelete(_ => NoDelete)}
-         message
-         onConfirmDeletion={onConfirmDeletion(id)}
-       />
-     | NoDelete => React.null
-     }}
-    <div className=Styles.container>
-      <div className=Styles.inputContainer> <InputBox onSubmit /> </div>
-      <ul className=Styles.ul>
-        {state.containers
-         ->mapElementArray(container => {
+  switch (data) {
+  | Loading => <p> "Loading"->s </p>
+  | Error => <p> "Error fetching boxes"->s </p>
+  | Loaded(containers) =>
+    <>
+      {switch (showDelete) {
+       | Delete(id, message) =>
+         <DeleteBoxModal
+           closeModal={_ => setShowDelete(_ => NoDelete)}
+           message
+           onConfirmDeletion={onConfirmDeletion(id)}
+         />
+       | NoDelete => React.null
+       }}
+      <div className=Styles.container>
+        <div className=Styles.inputContainer> <InputBox onSubmit /> </div>
+        <ul className=Styles.ul>
+          {containers->mapElementArray(container => {
              let (selected, edit) =
                switch (state.selectedContainer) {
                | Selected(id) => (id === container.id, false)
@@ -91,7 +102,8 @@ let make = (~state, ~dispatch) => {
                />
              </li>;
            })}
-      </ul>
-    </div>
-  </>;
+        </ul>
+      </div>
+    </>
+  };
 };

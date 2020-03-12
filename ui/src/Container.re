@@ -3,19 +3,16 @@ type t = {
   name: string,
 };
 
-let decoder = json => {
+let endpoint = "/api/containers";
+
+let decode = json => {
   Json.Decode.{
     id: json |> field("id", int),
     name: json |> field("name", string),
   };
 };
 
-let fetch_all = onData => {
-  ignore(
-    Js.Promise.(
-      Axios.get("/api/containers")
-      |> then_(resp => {resp##data |> Json.Decode.array(decoder) |> resolve})
-      |> then_(containers => resolve(onData(containers)))
-    ),
-  );
-};
+let decoder = json => Json.parseOrRaise(json) |> decode;
+
+let array_decoder = json =>
+  Json.parseOrRaise(json) |> Json.Decode.array(decode);

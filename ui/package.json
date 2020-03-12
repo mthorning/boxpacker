@@ -18,9 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "@glennsl/bs-json": "^5.0.2",
-    "bs-axios": "^0.0.43",
     "bs-css": "^11.0.0",
-    "bs-storybook": "^0.3.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "react-icons": "^3.9.0",
