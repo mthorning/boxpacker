@@ -1,3 +1,4 @@
+/*
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
@@ -23,3 +24,4 @@ pub fn add_container<'a>(conn: &PgConnection, name: &'a str) -> Container {
         .get_result(conn)
         .expect("Error saving new post")
 }
+*/

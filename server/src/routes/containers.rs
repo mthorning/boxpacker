@@ -43,3 +43,11 @@ pub fn add_container(conn: DbConn, new_container: Json<NewContainer>) -> BpResp 
         "There was a problem adding the container to the database.",
     )
 }
+
+#[delete("/<id>")]
+pub fn delete_container(conn: DbConn, id: i32) -> BpResp {
+    check_err(
+        Container::delete(&conn, id),
+        "There was a problem deleting the container from the database.",
+    )
+}

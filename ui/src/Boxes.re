@@ -25,11 +25,16 @@ type delete =
 
 [@react.component]
 let make = (~state, ~dispatch) => {
-  let (data, setData) =
-    XHR.useApiData(
-      ~endpoint=Container.endpoint,
-      ~decoder=Container.array_decoder,
-    );
+  React.useEffect0(() => {
+    let abort =
+      Xhr.get(
+        ~endpoint=Container.endpoint,
+        ~onLoad=
+          json => json->Container.array_decoder->LoadContainers->dispatch,
+        ~onError=error => Js.log(error),
+      );
+    Some(abort);
+  });
 
   let onClick = selection => dispatch(ToggleContainerSelection(selection));
 
@@ -39,20 +44,28 @@ let make = (~state, ~dispatch) => {
 
   let onDeleteClick = (id, event) => {
     ReactEvent.Mouse.stopPropagation(event);
+    setShowDelete(_ => Delete(id, "Are you sure you want to delete?"));
   };
 
   let onConfirmDeletion = (id, _) => {
-    dispatch(DeleteContainer(id));
+    Xhr.delete(
+      ~endpoint=Container.endpoint,
+      ~onLoad=() => dispatch(DeleteContainer(id)),
+      ~onError=error => Js.log(error),
+      ~id,
+    );
   };
 
   let onSubmit = (name, resetInput) => {
     let newContainer = Js.Dict.empty();
     Js.Dict.set(newContainer, "name", Js.Json.string(name));
-    XHR.postData(
-      ~endpoint=Container.endpoint,
-      ~data=Js.Json.stringify(Js.Json.object_(newContainer)),
-      ~decoder=Container.decoder,
-    );
+    let _ =
+      Xhr.post(
+        ~endpoint=Container.endpoint,
+        ~data=Js.Json.stringify(Js.Json.object_(newContainer)),
+        ~onLoad=json => json->Container.decoder->AddContainer->dispatch,
+        ~onError=error => Js.log(error),
+      );
     resetInput();
     ();
   };
@@ -62,24 +75,21 @@ let make = (~state, ~dispatch) => {
     resetInput();
   };
 
-  switch (data) {
-  | Loading => <p> "Loading"->s </p>
-  | Error => <p> "Error fetching boxes"->s </p>
-  | Loaded(containers) =>
-    <>
-      {switch (showDelete) {
-       | Delete(id, message) =>
-         <DeleteBoxModal
-           closeModal={_ => setShowDelete(_ => NoDelete)}
-           message
-           onConfirmDeletion={onConfirmDeletion(id)}
-         />
-       | NoDelete => React.null
-       }}
-      <div className=Styles.container>
-        <div className=Styles.inputContainer> <InputBox onSubmit /> </div>
-        <ul className=Styles.ul>
-          {containers->mapElementArray(container => {
+  <>
+    {switch (showDelete) {
+     | Delete(id, message) =>
+       <DeleteBoxModal
+         closeModal={_ => setShowDelete(_ => NoDelete)}
+         message
+         onConfirmDeletion={onConfirmDeletion(id)}
+       />
+     | NoDelete => React.null
+     }}
+    <div className=Styles.container>
+      <div className=Styles.inputContainer> <InputBox onSubmit /> </div>
+      <ul className=Styles.ul>
+        {state.containers
+         ->mapElementArray(container => {
              let (selected, edit) =
                switch (state.selectedContainer) {
                | Selected(id) => (id === container.id, false)
@@ -102,8 +112,7 @@ let make = (~state, ~dispatch) => {
                />
              </li>;
            })}
-        </ul>
-      </div>
-    </>
-  };
+      </ul>
+    </div>
+  </>;
 };

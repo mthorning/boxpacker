@@ -28,4 +28,8 @@ impl Container {
             .values(&new_container)
             .get_result(conn)
     }
+
+    pub fn delete(conn: &diesel::PgConnection, id_to_delete: i32) -> QueryResult<usize> {
+        diesel::delete(containers.filter(id.eq(id_to_delete))).execute(conn)
+    }
 }
