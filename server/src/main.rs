@@ -23,7 +23,12 @@ fn main() {
         .attach(DbConn::fairing())
         .mount(
             "/api/containers",
-            routes![get_all_containers, get_container_by_id, add_container],
+            routes![
+                get_all_containers,
+                get_container_by_id,
+                add_container,
+                delete_container
+            ],
         )
         .launch();
 }

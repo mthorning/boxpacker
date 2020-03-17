@@ -42,18 +42,18 @@ let make = (~state, ~dispatch) => {
 
   let (showDelete, setShowDelete) = React.useState(_ => NoDelete);
 
-  let onDeleteClick = (id, event) => {
-    ReactEvent.Mouse.stopPropagation(event);
-    setShowDelete(_ => Delete(id, "Are you sure you want to delete?"));
-  };
-
-  let onConfirmDeletion = (id, _) => {
+  let confirmDeletion = (id, _) => {
     Xhr.delete(
       ~endpoint=Container.endpoint,
       ~onLoad=() => dispatch(DeleteContainer(id)),
       ~onError=error => Js.log(error),
       ~id,
     );
+  };
+
+  let onDeleteClick = (id, event) => {
+    ReactEvent.Mouse.stopPropagation(event);
+    setShowDelete(_ => Delete(id, "Are you sure you want to delete?"));
   };
 
   let onSubmit = (name, resetInput) => {
@@ -81,7 +81,7 @@ let make = (~state, ~dispatch) => {
        <DeleteBoxModal
          closeModal={_ => setShowDelete(_ => NoDelete)}
          message
-         onConfirmDeletion={onConfirmDeletion(id)}
+         onConfirmDeletion={confirmDeletion(id)}
        />
      | NoDelete => React.null
      }}

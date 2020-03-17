@@ -51,3 +51,11 @@ pub fn delete_container(conn: DbConn, id: i32) -> BpResp {
         "There was a problem deleting the container from the database.",
     )
 }
+
+#[patch("/<id>", data = "<name>")]
+pub fn change_container_name(conn: DbConn, id: i32, name: String) -> BpResp {
+    check_err(
+        Container::change_name(&conn, id, name),
+        "There was a problem changing the container's name.",
+    )
+}

@@ -42,6 +42,10 @@ let reducer = (state, action) => {
     }
   | EditContainerName(id, name) => state
 
-  | DeleteContainer(id) => state
+  | DeleteContainer(id) => {
+      ...state,
+      containers:
+        Belt.Array.keep(state.containers, container => container.id != id),
+    }
   };
 };

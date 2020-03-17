@@ -32,4 +32,15 @@ impl Container {
     pub fn delete(conn: &diesel::PgConnection, id_to_delete: i32) -> QueryResult<usize> {
         diesel::delete(containers.filter(id.eq(id_to_delete))).execute(conn)
     }
+
+    pub fn change_name(
+        conn: &diesel::PgConnection,
+        id_to_edit: i32,
+        new_name: String,
+    ) -> QueryResult<Container> {
+        let target = containers.filter(id.eq(id_to_edit));
+        diesel::update(target)
+            .set(name.eq(new_name))
+            .get_result(conn)
+    }
 }
