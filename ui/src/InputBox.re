@@ -13,17 +13,17 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~placeholder="", ~onSubmit) => {
+let make = (~valueCatcher=value => value, ~placeholder="", ~onSubmit) => {
   let (value, setValue) = React.useState(_ => "");
 
   let onChange = event => {
     let inputVal = event->ReactEvent.Form.target##value;
-    setValue(_ => inputVal);
+    setValue(_ => valueCatcher(inputVal));
   };
 
   let onKeyDown = event =>
     if (event->ReactEvent.Keyboard.keyCode === 13 && value !== "") {
-      onSubmit(value, () => setValue(_ => ""));
+      onSubmit(value, () => setValue(_ => valueCatcher("")));
     };
 
   let stop = event => ReactEvent.Mouse.stopPropagation(event);

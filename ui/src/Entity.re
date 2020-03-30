@@ -39,7 +39,20 @@ module Styles = {
 
 [@react.component]
 let make =
-    (~edit, ~selected, ~onEdit as onSubmit, ~name, ~id, ~displayOnEntityClick) => {
+    (
+      ~total=?,
+      ~edit,
+      ~selected,
+      ~onEdit as onSubmit,
+      ~name,
+      ~id,
+      ~displayOnEntityClick,
+    ) => {
+  let nameAndTotal =
+    fun
+    | Some(t) when t > 1 => name ++ " / " ++ string_of_int(t)
+    | _ => name;
+
   <div className={Styles.container(selected)}>
     /*
      {edit
@@ -48,7 +61,7 @@ let make =
         */
 
       <div className=Styles.entity>
-        name->s
+        {nameAndTotal(total)->s}
         {selected ? displayOnEntityClick(id) : React.null}
       </div>
     </div>;

@@ -78,7 +78,7 @@ let make = (~state, ~dispatch) => {
   <>
     {switch (showDelete) {
      | Delete(id, message) =>
-       <DeleteBoxModal
+       <DeleteModal
          closeModal={_ => setShowDelete(_ => NoDelete)}
          message
          onConfirmDeletion={confirmDeletion(id)}

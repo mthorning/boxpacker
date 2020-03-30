@@ -1,4 +1,4 @@
-use crate::storage::models::{Container, NewContainer};
+use crate::storage::models::container::{Container, NewContainer};
 use crate::DbConn;
 use diesel::result::QueryResult;
 use rocket::response::status::NotFound;

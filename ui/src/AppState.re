@@ -9,7 +9,9 @@ type selection =
 
 type state = {
   containers: array(Container.t),
+  items: array(Item.t),
   selectedContainer: selection,
+  selectedItem: selection,
 };
 
 type action =
@@ -17,7 +19,12 @@ type action =
   | AddContainer(Container.t)
   | ToggleContainerSelection(selection)
   | EditContainerName(id, string)
-  | DeleteContainer(id);
+  | DeleteContainer(id)
+  | LoadItems(array(Item.t))
+  | AddItem(Item.t)
+  | ToggleItemSelection(selection)
+  | EditItemName(id, string)
+  | DeleteItem(id);
 
 let toggleSelection =
     (selectedEntity: selection, selection: selection): selection => {
@@ -46,6 +53,23 @@ let reducer = (state, action) => {
       ...state,
       containers:
         Belt.Array.keep(state.containers, container => container.id != id),
+    }
+  | LoadItems(items) => {...state, items}
+  | AddItem(newItem) => {
+      ...state,
+      items:
+        state.items->Belt.Array.keep(item => item.id !== newItem.id)
+        |> Array.append([|newItem|]),
+    }
+  | ToggleItemSelection(selection) => {
+      ...state,
+      selectedItem: toggleSelection(state.selectedItem, selection),
+    }
+  | EditItemName(id, name) => state
+
+  | DeleteItem(id) => {
+      ...state,
+      items: Belt.Array.keep(state.items, item => item.id != id),
     }
   };
 };

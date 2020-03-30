@@ -19,6 +19,7 @@ pub struct DbConn(diesel::PgConnection);
 
 fn main() {
     use routes::containers::*;
+    use routes::items::*;
     rocket::ignite()
         .attach(DbConn::fairing())
         .mount(
@@ -29,6 +30,10 @@ fn main() {
                 add_container,
                 delete_container
             ],
+        )
+        .mount(
+            "/api/items",
+            routes![get_all_items, get_item_by_id, add_item, delete_item],
         )
         .launch();
 }

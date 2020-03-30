@@ -1,5 +1,5 @@
-use super::schema::containers;
-use super::schema::containers::dsl::*;
+use crate::storage::schema::containers;
+use crate::storage::schema::containers::dsl::*;
 use diesel::prelude::*;
 
 #[derive(Insertable, Deserialize)]
