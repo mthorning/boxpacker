@@ -1,6 +1,7 @@
 use crate::storage::schema::items;
 use crate::storage::schema::items::dsl::*;
 use diesel::prelude::*;
+use std::time::SystemTime;
 
 #[derive(Insertable, Deserialize)]
 #[table_name = "items"]
@@ -14,11 +15,13 @@ pub struct Item {
     pub id: i32,
     pub name: String,
     pub total: i32,
+    pub created_at: SystemTime,
+    pub updated_at: SystemTime,
 }
 
 impl Item {
     pub fn get_all(conn: &diesel::PgConnection) -> QueryResult<Vec<Item>> {
-        items.order(id.asc()).load::<Item>(conn)
+        items.order(updated_at.desc()).load::<Item>(conn)
     }
 
     pub fn get_by_id(conn: &diesel::PgConnection, requested_id: i32) -> QueryResult<Item> {

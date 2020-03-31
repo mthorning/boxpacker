@@ -1,6 +1,7 @@
 use crate::storage::schema::containers;
 use crate::storage::schema::containers::dsl::*;
 use diesel::prelude::*;
+use std::time::SystemTime;
 
 #[derive(Insertable, Deserialize)]
 #[table_name = "containers"]
@@ -12,6 +13,8 @@ pub struct NewContainer<'a> {
 pub struct Container {
     pub id: i32,
     pub name: String,
+    pub created_at: SystemTime,
+    pub updated_at: SystemTime,
 }
 
 impl Container {
