@@ -32,7 +32,9 @@ module DoubleClick = {
   let handler = clickHandler => {
     let clickState = ref(NotClicked);
 
+    Js.log("return inner");
     (id: id) => {
+      Js.log("actual click");
       switch (clickState^) {
       | NotClicked =>
         let timeoutId =

@@ -54,15 +54,11 @@ let make =
     | _ => name;
 
   <div className={Styles.container(selected)}>
-    /*
-     {edit
-        ? <InputBox onSubmit={onSubmit(id)} />
-        :
-        */
-
-      <div className=Styles.entity>
-        {nameAndTotal(total)->s}
-        {selected ? displayOnEntityClick(id) : React.null}
-      </div>
-    </div>;
+    {edit
+       ? <InputBox onSubmit={onSubmit(id)} />
+       : <div className=Styles.entity>
+           {nameAndTotal(total)->s}
+           {selected ? displayOnEntityClick(id) : React.null}
+         </div>}
+  </div>;
 };

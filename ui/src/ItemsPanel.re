@@ -1,4 +1,5 @@
 open AppState;
+open Types;
 open Utils;
 
 module Styles = {
