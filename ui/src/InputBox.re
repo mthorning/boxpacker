@@ -30,6 +30,6 @@ let make = (~valueCatcher=value => value, ~placeholder="", ~onSubmit) => {
   let onBlur = _ => Js.log("blur");
 
   <div onClick=stop className=Styles.container>
-    <input type_="search" placeholder onChange onKeyDown value onBlur />
+    <input autoFocus=true type_="search" placeholder onChange onKeyDown value onBlur />
   </div>;
 };

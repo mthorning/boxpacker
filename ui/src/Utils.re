@@ -29,14 +29,12 @@ module DoubleClick = {
     | NotClicked
     | Clicked(Js_global.timeoutId);
 
+  let clickState = ref(NotClicked);
   let handler = clickHandler => {
-    let clickState = ref(NotClicked);
 
-    Js.log("return inner");
     (id: id) => {
-      Js.log("actual click");
       switch (clickState^) {
-      | NotClicked =>
+      | NotClicked => {
         let timeoutId =
           Js_global.setTimeout(
             () => {
@@ -47,12 +45,14 @@ module DoubleClick = {
             200,
           );
         clickState := Clicked(timeoutId);
+        }
 
-      | Clicked(timeoutId) =>
+      | Clicked(timeoutId) => {
         Js_global.clearTimeout(timeoutId);
         clickState := NotClicked;
         clickHandler(Editing(id));
         ();
+      };
       };
     };
   };

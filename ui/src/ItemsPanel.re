@@ -26,7 +26,7 @@ type delete =
 
 let useDeleteComponents = (~dispatch) => {
   let (showDelete, setShowDelete) = React.useState(_ => NoDelete);
-  let onDeleteClick = (id, event) => {
+    let onDeleteClick = (id, event) => {
     ReactEvent.Mouse.stopPropagation(event);
     setShowDelete(_ => Delete(id, "Are you sure you want to delete?"));
   };
@@ -80,9 +80,20 @@ let make = (~state, ~dispatch) => {
       id,
     );
 
-  let onEdit = (id, name, resetInput) => {
-    dispatch(EditItemName(id, name));
-    resetInput();
+  let onEdit = (id: AppState.id, name, _resetInput) => {
+    let updateItem = Js.Dict.empty();
+    Js.Dict.set(updateItem, "id", Js.Json.number(float_of_int(id)));
+    Js.Dict.set(updateItem, "name", Js.Json.string(name));
+    let _ = Xhr.patch(
+      ~endpoint=Item.endpoint,
+      ~onLoad=json => {
+          json->Item.decoder->AddItem->dispatch
+          dispatch(ToggleItemSelection(Selected(id)));
+      },
+      ~onError=error => Js.log(error),
+      ~data=Js.Json.stringify(Js.Json.object_(updateItem)),
+      ~id=id,
+    );
   };
 
   let onSubmit = (name, resetInput) => {
@@ -93,10 +104,12 @@ let make = (~state, ~dispatch) => {
       Xhr.post(
         ~endpoint=Item.endpoint,
         ~data=Js.Json.stringify(Js.Json.object_(newItem)),
-        ~onLoad=json => json->Item.decoder->AddItem->dispatch,
+        ~onLoad=json => {
+            json->Item.decoder->AddItem->dispatch;
+            resetInput();
+        },
         ~onError=error => Js.log(error),
       );
-    resetInput();
     ();
   };
 

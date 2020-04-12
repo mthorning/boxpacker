@@ -1,4 +1,4 @@
-use crate::storage::models::item::{Item, NewItem};
+use crate::storage::models::item::{Item, NewItem, UpdateItem};
 use crate::DbConn;
 use diesel::result::QueryResult;
 use rocket::response::status::NotFound;
@@ -52,10 +52,10 @@ pub fn delete_item(conn: DbConn, id: i32) -> BpResp {
     )
 }
 
-#[patch("/<id>", data = "<name>")]
-pub fn change_item_name(conn: DbConn, id: i32, name: String) -> BpResp {
+#[patch("/<id>", format = "json", data = "<update_item>")]
+pub fn edit_item(conn: DbConn, id: i32, update_item: Json<UpdateItem>) -> BpResp {
     check_err(
-        Item::change_name(&conn, id, name),
-        "There was a problem changing the item's name.",
+        Item::edit_item(&conn, id, update_item.into_inner()),
+        "There was a problem patching the item.",
     )
 }

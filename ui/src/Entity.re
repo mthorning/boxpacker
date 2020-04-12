@@ -55,7 +55,7 @@ let make =
 
   <div className={Styles.container(selected)}>
     {edit
-       ? <InputBox onSubmit={onSubmit(id)} />
+       ? <InputBox placeholder=name onSubmit={onSubmit(id)} />
        : <div className=Styles.entity>
            {nameAndTotal(total)->s}
            {selected ? displayOnEntityClick(id) : React.null}

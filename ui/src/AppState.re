@@ -23,7 +23,6 @@ type action =
   | LoadItems(array(Item.t))
   | AddItem(Item.t)
   | ToggleItemSelection(selection)
-  | EditItemName(id, string)
   | DeleteItem(id);
 
 let toggleSelection =
@@ -64,9 +63,7 @@ let reducer = (state, action) => {
   | ToggleItemSelection(selection) => {
       ...state,
       selectedItem: toggleSelection(state.selectedItem, selection),
-    }
-  | EditItemName(id, name) => state
-
+  }
   | DeleteItem(id) => {
       ...state,
       items: Belt.Array.keep(state.items, item => item.id != id),

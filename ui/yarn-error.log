@@ -1,25 +1,25 @@
 Arguments: 
-  /home/mthorning/.nvm/versions/node/v12.13.1/bin/node /home/mthorning/.yarn/bin/yarn.js run server
+  /home/mthorning/.nvm/versions/node/v12.16.1/bin/node /home/mthorning/.nvm/versions/node/v12.16.1/bin/yarn run server
 
 PATH: 
-  /home/mthorning/.yarn/bin:/home/mthorning/.config/yarn/global/node_modules/.bin:/home/mthorning/.cargo/bin:/home/mthorning/.yarn/bin:/home/mthorning/.config/yarn/global/node_modules/.bin:/home/mthorning/.nvm/versions/node/v12.13.1/bin:/home/mthorning/.cargo/bin:/usr/share/Modules/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/home/mthorning/bin:/home/mthorning/bin
+  /home/mthorning/.cargo/bin:/home/mthorning/.nvm/versions/node/v12.16.1/bin:/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
 
 Yarn version: 
-  1.22.1
+  1.22.4
 
 Node version: 
-  12.13.1
+  12.16.1
 
 Platform: 
   linux x64
 
 Trace: 
-  SyntaxError: /home/mthorning/Documents/code/boxpacker/boxpacker_gui/package.json: Unexpected token s in JSON at position 182
+  SyntaxError: /home/mthorning/Documents/code/boxpacker/ui/package.json: Unexpected token g in JSON at position 183
       at JSON.parse (<anonymous>)
-      at /home/mthorning/.yarn/lib/cli.js:1625:59
+      at /home/mthorning/.nvm/versions/node/v12.16.1/lib/node_modules/yarn/lib/cli.js:1625:59
       at Generator.next (<anonymous>)
-      at step (/home/mthorning/.yarn/lib/cli.js:310:30)
-      at /home/mthorning/.yarn/lib/cli.js:321:13
+      at step (/home/mthorning/.nvm/versions/node/v12.16.1/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /home/mthorning/.nvm/versions/node/v12.16.1/lib/node_modules/yarn/lib/cli.js:321:13
 
 npm manifest: 
   {
@@ -29,8 +29,8 @@ npm manifest:
       "build": "bsb -make-world",
       "start": "bsb -make-world -w -ws _ ",
       "clean": "bsb -clean-world",
-      "nginx": sudo "nginx -s stop; sudo nginx -p ./ -c nginx.dev.conf",
-      "moduleserve": "moduleserve ./ --port 8002" ,
+      "nginx": nginx -p ./ -c nginx.dev.conf",
+      "moduleserve": "moduleserve ./ --port 8002",
       "server": "yarn run nginx && yarn run moduleserve"
     },
     "keywords": [
@@ -41,9 +41,8 @@ npm manifest:
     "author": "Matt Thorning",
     "license": "MIT",
     "dependencies": {
-      "bs-axios": "^0.0.43",
+      "@glennsl/bs-json": "^5.0.2",
       "bs-css": "^11.0.0",
-      "bs-storybook": "^0.3.0",
       "react": "^16.8.1",
       "react-dom": "^16.8.1",
       "react-icons": "^3.9.0",
@@ -251,6 +250,11 @@ Lockfile:
     version "0.2.5"
     resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
     integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
+  
+  "@glennsl/bs-json@^5.0.2":
+    version "5.0.2"
+    resolved "https://registry.yarnpkg.com/@glennsl/bs-json/-/bs-json-5.0.2.tgz#cfb85d94d370ec6dc17849e0ddb1a51eee08cfcc"
+    integrity sha512-vVlHJNrhmwvhyea14YiV4L5pDLjqw1edE3GzvMxlbPPQZVhzgO3sTWrUxCpQd2gV+CkMfk4FHBYunx9nWtBoDg==
   
   "@types/parse-json@^4.0.0":
     version "4.0.0"

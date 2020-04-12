@@ -40,6 +40,19 @@ let post = (~endpoint, ~onLoad, ~onError, ~data) => {
   };
 };
 
+let patch = (~endpoint, ~onLoad, ~onError, ~data, ~id) => {
+  let request = makeXMLHttpRequest();
+  request->addEventListener("load", () => {onLoad(request->response)});
+  request->addEventListener("error", () => {onError("Failed to patch data")});
+  request->open_("PATCH", endpoint ++ "/" ++ string_of_int(id));
+  request->setRequestHeader("Content-Type", "application/json");
+  request->sendWithData(data);
+
+  () => {
+    request->abort;
+  };
+};
+
 let delete = (~endpoint, ~onLoad, ~onError, ~id) => {
   let request = makeXMLHttpRequest();
   request->addEventListener("load", onLoad);
