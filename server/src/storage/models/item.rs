@@ -35,13 +35,12 @@ impl Item {
         items.find(requested_id).first::<Item>(conn)
     }
 
-
     pub fn add(conn: &diesel::PgConnection, new_item: NewItem) -> QueryResult<Item> {
         match Self::increment_matching_name(conn, &new_item.name, 1) {
             Some(result) => result,
-             None => diesel::insert_into(items)
+            None => diesel::insert_into(items)
                 .values(&new_item)
-                .get_result(conn)
+                .get_result(conn),
         }
     }
 
@@ -49,39 +48,56 @@ impl Item {
         diesel::delete(items.filter(id.eq(id_to_delete))).execute(conn)
     }
 
-    pub fn edit_item(conn: &diesel::PgConnection, item_id: i32, update_item: UpdateItem) -> QueryResult<Item> {
-        let item = items.find(item_id).first::<Item>(conn)
+    pub fn edit_item(
+        conn: &diesel::PgConnection,
+        item_id: i32,
+        update_item: UpdateItem,
+    ) -> QueryResult<Item> {
+        match items.find(item_id).first(conn) {
+            Err(err) => return Err(err),
+            Ok(item) => {
+                let patch_item = || -> QueryResult<Item> {
+                    diesel::update(&item).set(&update_item).get_result(conn)
+                };
 
-        let patch_item = || -> QueryResult<Item> {
-            diesel::update(&item).set(&update_item).get_result(conn)
-        };
-
-        match update_item.name {
-            Some(new_name) => {
-                match Self::increment_matching_name(conn, &new_name, target.total) {
-                    Some(result) => result,
-                    None => patch_item()
+                match update_item.name {
+                    Some(new_name) => {
+                        match Self::increment_matching_name(conn, &new_name, item.total) {
+                            Some(result) => {
+                                Self::delete(conn, item_id)?;
+                                result
+                            }
+                            None => patch_item(),
+                        }
+                    }
+                    None => patch_item(),
                 }
             }
-            None => patch_item()
         }
     }
 
-    fn increment_matching_name(conn: &diesel::PgConnection, item_name: &str, item_total: i32) -> Option<QueryResult<Item>> {
-        let items_with_name = items.filter(name.eq(item_name)).load::<Item>(conn).expect("Unexpected error connecting to DB");
-        let num_of_items = items_with_name.len();
+    fn increment_matching_name(
+        conn: &diesel::PgConnection,
+        received_name: &str,
+        received_total: i32,
+    ) -> Option<QueryResult<Item>> {
+        let stored_items = items
+            .filter(name.eq(received_name))
+            .load(conn)
+            .expect("Unexpected error connecting to DB");
+        let num_of_stored = stored_items.len();
 
-        match num_of_items > 0 {
-            true if num_of_items == 1 => {
-                let item = &items_with_name[0];
+        match num_of_stored > 0 {
+            true if num_of_stored == 1 => {
+                let stored_item = &stored_items[0];
                 Some(
-                    diesel::update(item)
-                        .set(total.eq(item.total + item_total))
-                        .get_result(conn)
+                    diesel::update(stored_item)
+                        .set(total.eq(stored_item.total + received_total))
+                        .get_result(conn),
                 )
-            },
-            true => panic!("More than on item with same name in DB"),
-            false => None
+            }
+            true => Some(Err(diesel::result::Error::__Nonexhaustive)),
+            false => None,
         }
     }
 }

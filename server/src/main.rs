@@ -33,7 +33,13 @@ fn main() {
         )
         .mount(
             "/api/items",
-            routes![get_all_items, get_item_by_id, add_item, delete_item, edit_item],
+            routes![
+                get_all_items,
+                get_item_by_id,
+                add_item,
+                delete_item,
+                edit_item
+            ],
         )
         .launch();
 }
