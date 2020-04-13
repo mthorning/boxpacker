@@ -15,13 +15,6 @@ let uuid = name => {
   id;
 };
 
-/* Icons */
-module DeleteIcon = {
-  [@bs.module "react-icons/ai"] [@react.component]
-  external make: (~onClick: ReactEvent.Mouse.t => unit) => React.element =
-    "AiOutlineDelete";
-};
-
 module DoubleClick = {
   open AppState;
 
@@ -56,4 +49,23 @@ module DoubleClick = {
       };
     };
   };
+};
+
+/* Icons */
+module DeleteIcon = {
+  [@bs.module "react-icons/ai"] [@react.component]
+  external make: (~onClick: ReactEvent.Mouse.t => unit) => React.element =
+    "AiOutlineDelete";
+};
+
+module PlusIcon = {
+  [@bs.module "react-icons/ai"] [@react.component]
+  external make: (~onClick: ReactEvent.Mouse.t => unit) => React.element =
+    "AiOutlinePlusCircle";
+};
+
+module MinusIcon = {
+  [@bs.module "react-icons/ai"] [@react.component]
+  external make: (~onClick: ReactEvent.Mouse.t => unit) => React.element =
+    "AiOutlineMinusCircle";
 };

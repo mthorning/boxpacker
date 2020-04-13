@@ -71,7 +71,7 @@ let make = (~state, ~dispatch) => {
     ();
   };
 
-  let onEdit = (id, name, resetInput) => {
+  let onNameEdit = (id, name, resetInput) => {
     dispatch(EditContainerName(id, name));
     resetInput();
   };
@@ -104,8 +104,9 @@ let make = (~state, ~dispatch) => {
                <Entity
                  name={container.name}
                  id={container.id}
-                 onEdit
-                 displayOnEntityClick={id =>
+                 onNameEdit
+                 displayBeforeClick={() => React.null}
+                 displayOnClick={id =>
                    <DeleteIcon onClick={onDeleteClick(id)} />
                  }
                  edit
