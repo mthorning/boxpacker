@@ -60,7 +60,7 @@ let rec reducer = (state, action) => {
             items:
                 state.items->Belt.Array.keep(item => item.id !== newItem.id)
                 |> Array.append([|newItem|]),
-        }
+                }
         | ToggleItemSelection(selection) => {
             ...state,
             selectedItem: toggleSelection(state.selectedItem, selection),
@@ -70,11 +70,19 @@ let rec reducer = (state, action) => {
             items: Belt.Array.keep(state.items, item => item.id != id),
         }
         | EditItem(originalId, responseItem) => {
-            ...(originalId == responseItem.id ? state->reducer(DeleteItem(originalId)) : state),
-            items: state.items->Belt.Array.map(
-                item => responseItem.id == originalId ? responseItem : item
-            ),
-            selectedItem: Nothing,
+            originalId == responseItem.id
+                ? {
+                    ...state,
+                    items: state.items->Belt.Array.map(
+                        item => item.id == responseItem.id
+                        ? responseItem
+                        : item
+                    ),
+                    selectedItem: Nothing,
+                }
+            : state
+                ->reducer(DeleteItem(originalId))
+                ->reducer(EditItem(responseItem.id, responseItem))
         }
-    };
-}
+    }
+};

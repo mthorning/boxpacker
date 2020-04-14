@@ -44,12 +44,12 @@ let useDeleteComponents = (~dispatch) => {
 
     let modal =
         fun
-        | Delete(id, message) =>
+            | Delete(id, message) =>
             <DeleteModal
-                closeModal={_ => setShowDelete(_ => NoDelete)}
-                message
-                onConfirmDeletion={confirmDeletion(id)}
-            />
+            closeModal={_ => setShowDelete(_ => NoDelete)}
+    message
+        onConfirmDeletion={confirmDeletion(id)}
+    />
         | NoDelete => React.null;
 
         (button, modal(showDelete), triggerDeletion);
@@ -68,40 +68,40 @@ let patchItem = (~id, ~onLoad, ~updateItem) => {
 module TotalEditor = {
     module Styles = {
         let container = style([
-            display(`flex),
-            alignItems(center),
+                              display(`flex),
+                              alignItems(center),
         ]);
         let total = style([
-            30->px->minWidth,
-            textAlign(center),
+                          30->px->minWidth,
+                          textAlign(center),
         ]);
     }
 
     [@react.component]
-    let make = (~item: Item.t, ~triggerDeletion, ~dispatch) => {
-        let onClick = (operation, e) => {
-            ReactEvent.Mouse.stopPropagation(e);
+        let make = (~item: Item.t, ~triggerDeletion, ~dispatch) => {
+            let onClick = (operation, e) => {
+                ReactEvent.Mouse.stopPropagation(e);
 
-            let total = item.total + operation;
-            if(total == 0) {
-                triggerDeletion(item.id);
-            } else {
-                let updateItem = Js.Dict.empty();
-                Js.Dict.set(updateItem, "total", Js.Json.number(float_of_int(total)));
-                patchItem(
-                    ~id=item.id,
-                    ~updateItem,
-                    ~onLoad=responseItem => dispatch(EditItem(item.id, responseItem)),
-                );
-            }
-        };
+                let total = item.total + operation;
+                if(total == 0) {
+                    triggerDeletion(item.id);
+                } else {
+                    let updateItem = Js.Dict.empty();
+                    Js.Dict.set(updateItem, "total", Js.Json.number(float_of_int(total)));
+                    patchItem(
+                        ~id=item.id,
+                        ~updateItem,
+                        ~onLoad=responseItem => dispatch(EditItem(item.id, responseItem)),
+                    );
+                }
+            };
 
-        <div className=Styles.container>
-            <MinusIcon onClick=onClick(-1) />
-            <span className=Styles.total>item.total->string_of_int->s</span>
-            <PlusIcon onClick=onClick(1) />
-        </div>
-    }
+            <div className=Styles.container>
+                <MinusIcon onClick=onClick(-1) />
+                <span className=Styles.total>item.total->string_of_int->s</span>
+                <PlusIcon onClick=onClick(1) />
+                </div>
+        }
 }
 
 [@react.component]
@@ -124,8 +124,8 @@ let make = (~state, ~dispatch) => {
     });
 
     let onClick = id => Utils.DoubleClick.handler(
-            selection => dispatch(ToggleItemSelection(selection)),
-            id,
+        selection => dispatch(ToggleItemSelection(selection)),
+        id,
     );
 
     let onNameEdit = (id: AppState.id, name, _resetInput) => {
@@ -156,37 +156,37 @@ let make = (~state, ~dispatch) => {
     <>
         deleteModal
         <div className=Styles.wrapper>
-            <div className=Styles.inputItem>
-                <InputBox onSubmit valueCatcher />
-            </div>
-            <ul className=Styles.ul>
-                {state.items
-                    ->Belt.Array.keep(item => Js.String.includes(inputValue, item.name))
-                    ->mapElementArray(item => {
-                        let (selected, edit) =
-                            switch (state.selectedItem) {
-                                | Selected(id) => (id === item.id, false)
-                                | Editing(id) => (false, id === item.id)
-                                | _ => (false, false)
-                            };
-                        <li
-                            onClick={_ => onClick(item.id)}
-                            key={string_of_int(item.id)}
-                            className=Styles.li
-                        >
-                            <Entity
-                                onNameEdit
-                                edit
-                                selected
-                                name={item.name}
-                                id={item.id}
-                                displayBeforeClick={() => <TotalEditor item dispatch triggerDeletion />}
-                                displayOnClick=deleteButton
-                            />
-                        </li>;
-                    })
-                }
-            </ul>
+        <div className=Styles.inputItem>
+        <InputBox onSubmit valueCatcher />
         </div>
-    </>;
+        <ul className=Styles.ul>
+        {state.items
+            ->Belt.Array.keep(item => Js.String.includes(inputValue, item.name))
+                ->mapElementArray(item => {
+                    let (selected, edit) =
+                        switch (state.selectedItem) {
+                            | Selected(id) => (id === item.id, false)
+                            | Editing(id) => (false, id === item.id)
+                            | _ => (false, false)
+                            };
+                    <li
+                        onClick={_ => onClick(item.id)}
+                    key={string_of_int(item.id)}
+                    className=Styles.li
+                        >
+                        <Entity
+                        onNameEdit
+                        edit
+                        selected
+                        name={item.name}
+                    id={item.id}
+                    displayBeforeClick={() => <TotalEditor item dispatch triggerDeletion />}
+                    displayOnClick=deleteButton
+                        />
+                        </li>;
+                })
+        }
+    </ul>
+        </div>
+        </>;
 };
