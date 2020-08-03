@@ -5,7 +5,8 @@ type id = int;
 type selection =
     | Nothing
     | Selected(id)
-    | Editing(id);
+    | Editing(id)
+    | Deleting(id);
 
     type state = {
         containers: array(Container.t),

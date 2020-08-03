@@ -19,9 +19,9 @@ module Styles = {
     let li = style([cursor(`pointer), listStyleType(none)]);
 };
 
-    type delete =
-| Delete(id, string)
-| NoDelete;
+type delete =
+    | Delete(id, string)
+    | NoDelete;
 
 let useDeleteComponents = (~dispatch) => {
     let (showDelete, setShowDelete) = React.useState(_ => NoDelete);

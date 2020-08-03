@@ -25,7 +25,6 @@ module App = {
     [@react.component]
         let make = _ => {
             let (state, dispatch) = React.useReducer(reducer, initialState);
-            Js.log(state.selectedItem);
             <div className=Styles.container> <ItemsPanel state dispatch /> </div>;
             /*
                <Items state dispatch />
